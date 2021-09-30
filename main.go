@@ -10,10 +10,14 @@ import (
 
 func main() {
 	var test testdb.Database
-	test.New()
+	err := test.New()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Println("Enter Command put ( Key Value ) or get ( Key ) ")
+		fmt.Println("Enter Command put/get/delete/flush/close/stats ")
 		command, err := reader.ReadString('\n')
 		if err != nil {
 			break
@@ -25,8 +29,12 @@ func main() {
 			if err != nil {
 				break
 			}
-			s := strings.Split(strings.Trim(keyvalue,"\n"), ":")
-			test.Put([]byte(s[0]),[]byte(s[1]))
+			s := strings.Split(strings.Trim(keyvalue, "\n"), ":")
+			err = test.Put([]byte(s[0]), []byte(s[1]))
+			if err != nil {
+				fmt.Println("Put failed ")
+
+			}
 
 		case "get\n":
 			fmt.Println("Enter key to get")
@@ -34,11 +42,11 @@ func main() {
 			if err != nil {
 				break
 			}
-			key=strings.Trim(key,"\n")
-			value,ok:=test.Get([]byte(key))
+			key = strings.Trim(key, "\n")
+			value, ok := test.Get([]byte(key))
 			if ok != nil {
 				fmt.Println("No such key")
-			}else {
+			} else {
 				fmt.Println(string(value))
 			}
 		case "delete\n":
@@ -47,11 +55,11 @@ func main() {
 			if err != nil {
 				break
 			}
-			key=strings.Trim(key,"\n")
-			ok:=test.Delete([]byte(key))
+			key = strings.Trim(key, "\n")
+			ok := test.Delete([]byte(key))
 			if ok != nil {
 				fmt.Println("No such key")
-			}else {
+			} else {
 				fmt.Println("Key was deleted ")
 			}
 		case "flush\n":
@@ -63,11 +71,10 @@ func main() {
 		case "close\n":
 			test.Close()
 			fmt.Println("Exit")
-			break
+			os.Exit(0)
 		default:
 			fmt.Println("Unknown command")
 		}
-
 
 	}
 }
