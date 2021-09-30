@@ -1,4 +1,4 @@
-package dbPackage
+package testdb
 
 import (
 	"github.com/stretchr/testify/require"

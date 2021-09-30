@@ -1,4 +1,4 @@
-package dbPackage
+package testdb
 
 import (
 	"errors"

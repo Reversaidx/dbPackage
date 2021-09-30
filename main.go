@@ -1,0 +1,73 @@
+package main
+
+import (
+	"bufio"
+	"dbPackage/testdb"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func main() {
+	var test testdb.Database
+	test.New()
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Println("Enter Command put ( Key Value ) or get ( Key ) ")
+		command, err := reader.ReadString('\n')
+		if err != nil {
+			break
+		}
+		switch command {
+		case "put\n":
+			fmt.Println("Enter key:value to put")
+			keyvalue, err := reader.ReadString('\n')
+			if err != nil {
+				break
+			}
+			s := strings.Split(strings.Trim(keyvalue,"\n"), ":")
+			test.Put([]byte(s[0]),[]byte(s[1]))
+
+		case "get\n":
+			fmt.Println("Enter key to get")
+			key, err := reader.ReadString('\n')
+			if err != nil {
+				break
+			}
+			key=strings.Trim(key,"\n")
+			value,ok:=test.Get([]byte(key))
+			if ok != nil {
+				fmt.Println("No such key")
+			}else {
+				fmt.Println(string(value))
+			}
+		case "delete\n":
+			fmt.Println("Enter key to delete")
+			key, err := reader.ReadString('\n')
+			if err != nil {
+				break
+			}
+			key=strings.Trim(key,"\n")
+			ok:=test.Delete([]byte(key))
+			if ok != nil {
+				fmt.Println("No such key")
+			}else {
+				fmt.Println("Key was deleted ")
+			}
+		case "flush\n":
+			test.Flush()
+			fmt.Println("Done")
+		case "stats\n":
+			test.Stats()
+			fmt.Println(test.Stats())
+		case "close\n":
+			test.Close()
+			fmt.Println("Exit")
+			break
+		default:
+			fmt.Println("Unknown command")
+		}
+
+
+	}
+}
